@@ -1,7 +1,7 @@
-const Plant = require("../models/plant");
-const Greenhouse = require("../models/greenhouse");
-const Type = require("../models/type");
-const PlantInstance = require("../models/plantinstance");
+const {Plant} = require("../models/plant");
+const {Greenhouse} = require("../models/greenhouse");
+const {Type} = require("../models/type");
+const {PlantInstance} = require("../models/plantinstance");
 
 const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
@@ -35,8 +35,14 @@ exports.index = asyncHandler(async (req, res, next) => {
 
 // Display list of all plants.
 exports.plant_list = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Plant list");
+  const allPlants = await Plant.find({}, "name greenhouse")
+    .sort({ name: 1 })
+    .populate("greenhouse")
+    .exec();
+
+  res.render("plant_list", { title: "Plant List", plant_list: allPlants });
 });
+
 
 // Display detail page for a specific plant.
 exports.plant_detail = asyncHandler(async (req, res, next) => {
