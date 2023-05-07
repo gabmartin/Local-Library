@@ -1,9 +1,37 @@
-const { Plant } = require("../models/plant");
-const asyncHandler = require('express-async-handler')
+const Plant = require("../models/plant");
+const Greenhouse = require("../models/greenhouse");
+const Type = require("../models/type");
+const PlantInstance = require("../models/plantinstance");
+
+const { body, validationResult } = require("express-validator");
+const asyncHandler = require("express-async-handler");
 
 exports.index = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Site Home Page");
+  // Get details of plants, plant instances, greenhouses and type counts (in parallel)
+  const [
+    numPlants,
+    numPlantInstances,
+    numAvailablePlantInstances,
+    numGreenhouses,
+    numTypes,
+  ] = await Promise.all([
+    Plant.countDocuments({}).exec(),
+    PlantInstance.countDocuments({}).exec(),
+    PlantInstance.countDocuments({ status: "Disponible" }).exec(),
+    Greenhouse.countDocuments({}).exec(),
+    Type.countDocuments({}).exec(),
+  ]);
+
+  res.render("index", {
+    title: "Local Library Home",
+    plant_count: numPlants,
+    plant_instance_count: numPlantInstances,
+    plant_instance_available_count: numAvailablePlantInstances,
+    greenhouse_count: numGreenhouses,
+    type_count: numTypes,
+  });
 });
+
 
 // Display list of all plants.
 exports.plant_list = asyncHandler(async (req, res, next) => {
