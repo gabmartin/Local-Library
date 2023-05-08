@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1= title
+
+  ul
+    each greenhouse in greenhouse_list
+      li
+        a(href=greenhouse.url) #{greenhouse.name}
+        |  (#{greenhouse.location})
+
+    else
+      li There are no greenhouses.

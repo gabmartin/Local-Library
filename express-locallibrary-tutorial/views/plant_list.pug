@@ -7,7 +7,7 @@ block content
     each plant in plant_list
       li
         a(href=plant.url) #{plant.name}
-        //- |   (#{plant.greenhouse})
+        |   (#{plant.greenhouse.name})
 
 
     else

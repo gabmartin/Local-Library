@@ -1,10 +1,16 @@
-const { Plantinstance } = require("../models/plantinstance");
+const { PlantInstance } = require("../models/plantinstance");
 const asyncHandler = require('express-async-handler')
 
-// Display list of all Plantinstances.
+// Display list of all PlantInstances.
 exports.plantinstance_list = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Plantinstance list");
+  const allPlantInstances = await PlantInstance.find().populate("plant").exec();
+
+  res.render("plantinstance_list", {
+    title: "Plant Instance List",
+    plantinstance_list: allPlantInstances,
+  });
 });
+
 
 // Display detail page for a specific Plantinstance.
 exports.plantinstance_detail = asyncHandler(async (req, res, next) => {

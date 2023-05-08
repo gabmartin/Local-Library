@@ -1,0 +1,18 @@
+extends layout
+
+block content
+  h1= title
+
+  ul
+    each val in plantinstance_list
+      li
+        a(href=val.url) #{val.plant.name} : #{val.imprint} -
+        if val.status=='Disponible'
+          span.text-success #{val.status}
+        else if val.status=='Mantenimiento'
+          span.text-danger #{val.status}
+        else
+          span.text-warning #{val.status}
+
+    else
+      li No nos quedan reservas de esta planta en los almacenes.
