@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  h1 #{title}: #{plant.name}
+  p= plant.greenhouse
+
+  if plant_instances.length
+
+    p #[strong Delete the following plantintances before attempting to delete this plant.]
+
+    div(style='margin-left:20px;margin-top:20px')
+
+      h4 Plant Intances
+
+      dl
+      each instance in plant_instances
+        dt
+          a(href=plantinstance.url) #{plantinstance.imprint}
+        dd #{plant.status}
+
+  else
+    p Do you really want to delete this Plant?
+
+    form(method='POST' action='')
+      div.form-group
+        input#plantid.form-control(type='hidden',name='plantid', required='true', value=plant._id )
+
+      button.btn.btn-primary(type='submit') Delete

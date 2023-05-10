@@ -17,7 +17,7 @@ exports.greenhouse_list = asyncHandler(async (req, res, next) => {
 // Display detail page for a specific Greenhouse.
 exports.greenhouse_detail = asyncHandler(async (req, res, next) => {
   const id = mongoose.Types.ObjectId(req.params.id);
-  // Get details of greenhouse and all their books (in parallel)
+  // Get details of greenhouse and all their plants (in parallel)
   const [greenhouse, allPlantsByGreenhouse] = await Promise.all([
     Greenhouse.findById(id).exec(),
     Plant.find({ greenhouse: id }, "name price").exec(),
@@ -86,15 +86,48 @@ exports.greenhouse_create_post = [
   }),
 ];
 
-
 // Display Greenhouse delete form on GET.
 exports.greenhouse_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Greenhouse delete GET");
+  // Get details of greenhouse and all their plants (in parallel)
+  const [greenhouse, allPlantsByGreenhouse] = await Promise.all([
+    Greenhouse.findById(req.params.id).exec(),
+    Plant.find({ greenhouse: req.params.id }, "name price").exec(),
+  ]);
+
+  if (greenhouse === null) {
+    // No results.
+    res.redirect("/catalog/greenhouses");
+  }
+
+  res.render("greenhouse_delete", {
+    title: "Delete Greenhouse",
+    greenhouse: greenhouse,
+    greenhouse_plants: allPlantsByGreenhouse,
+  });
 });
+
 
 // Handle Greenhouse delete on POST.
 exports.greenhouse_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Greenhouse delete POST");
+  // Get details of greenhouse and all their plants (in parallel)
+  const [greenhouse, allPlantsByGreenhouse] = await Promise.all([
+    Greenhouse.findById(req.params.id).exec(),
+    Plant.find({ greenhouse: req.params.id }, "name price").exec(),
+  ]);
+
+  if (allPlantsByGreenhouse.length > 0) {
+    // Greenhouse has plants. Render in same way as for GET route.
+    res.render("greenhouse_delete", {
+      title: "Delete Greenhouse",
+      greenhouse: greenhouse,
+      greenhouse_plants: allPlantsByGreenhouse,
+    });
+    return;
+  } else {
+    // Greenhouse has no plants. Delete object and redirect to the list of greenhouses.
+    await Greenhouse.findByIdAndRemove(req.body.greenhouseid);
+    res.redirect("/catalog/greenhouses");
+  }
 });
 
 // Display Greenhouse update form on GET.

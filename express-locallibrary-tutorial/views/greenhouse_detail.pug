@@ -13,7 +13,10 @@ block content
       each plant in greenhouse_plants
         dt
           a(href=plant.url) #{plant.name}
-        dd #{plant.price}
+        dd Price: #{plant.price}
 
       else
         p This greenhouse has no plants.
+  hr
+  p
+    a(href=greenhouse.url+'/delete') Delete greenhouse

@@ -155,12 +155,46 @@ exports.plant_create_post = [
 
 // Display plant delete form on GET.
 exports.plant_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Plant delete GET");
+  // Get details of plant and all their instances (in parallel)
+  const [plant, allInstancesByPlant] = await Promise.all([
+    Plant.findById(req.params.id).exec(),
+    PlantInstance.find({ plant: req.params.id }, "imprint status").exec(),
+  ]);
+
+  if (plant === null) {
+    // No results.
+    res.redirect("/catalog/plants");
+  }
+
+  res.render("plant_delete", {
+    title: "Delete Plant",
+    plant: plant,
+    plant_instances: allInstancesByPlant,
+  });
 });
 
-// Handle plant delete on POST.
+
+// Handle Greenhouse delete on POST.
 exports.plant_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Plant delete POST");
+  // Get details of greenhouse and all their plants (in parallel)
+  const [plant, allInstancesByPlant] = await Promise.all([
+    Plant.findById(req.params.id).exec(),
+    PlantInstance.find({ plant: req.params.id }, "imprint status").exec(),
+  ]);
+
+  if (allInstancesByPlant.length > 0) {
+    // Greenhouse has plants. Render in same way as for GET route.
+    res.render("plant_delete", {
+      title: "Delete Plant",
+      plant: plant,
+      plant_instances: allInstancesByPlant,
+    });
+    return;
+  } else {
+    // Greenhouse has no plants. Delete object and redirect to the list of greenhouses.
+    await Plant.findByIdAndRemove(req.body.plantid);
+    res.redirect("/catalog/plants");
+  }
 });
 
 // Display plant update form on GET.
