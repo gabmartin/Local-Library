@@ -1,0 +1,17 @@
+extends layout
+
+block content
+
+  h1 ID: #{plantinstance._id}
+
+  p #[strong Title:]
+    a(href=plantinstance.plant.url) #{plantinstance.plant.name}
+  p #[strong Imprint:] #{plantinstance.imprint}
+
+  p #[strong Status:]
+    if plantinstance.status=='Disponible'
+      span.text-success #{plantinstance.status}
+    else if plantinstance.status=='Mantenimiento'
+      span.text-danger #{plantinstance.status}
+    else
+      span.text-warning #{plantinstance.status}

@@ -1,5 +1,6 @@
 const { PlantInstance } = require("../models/plantinstance");
-const asyncHandler = require('express-async-handler')
+const asyncHandler = require('express-async-handler');
+const mongoose = require("mongoose");
 
 // Display list of all PlantInstances.
 exports.plantinstance_list = asyncHandler(async (req, res, next) => {
@@ -12,10 +13,26 @@ exports.plantinstance_list = asyncHandler(async (req, res, next) => {
 });
 
 
-// Display detail page for a specific Plantinstance.
+// Display detail page for a specific PlantInstance.
 exports.plantinstance_detail = asyncHandler(async (req, res, next) => {
-  res.send(`NOT IMPLEMENTED: Plantinstance detail: ${req.params.id}`);
+  const id = mongoose.Types.ObjectId(req.params.id);
+  const plantInstance = await PlantInstance.findById(id)
+    .populate("plant")
+    .exec();
+
+  if (plantInstance === null) {
+    // No results.
+    const err = new Error("Plant copy not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render("plantinstance_detail", {
+    title: "Plant:",
+    plantinstance: plantInstance,
+  });
 });
+
 
 // Display Plantinstance create form on GET.
 exports.plantinstance_create_get = asyncHandler(async (req, res, next) => {

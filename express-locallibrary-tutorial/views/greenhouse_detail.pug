@@ -1,0 +1,19 @@
+extends layout
+
+block content
+
+  h1 Greenhouse: #{greenhouse.name}
+  p #{greenhouse.location}
+
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Plants
+
+    dl
+      each plant in greenhouse_plants
+        dt
+          a(href=plant.url) #{plant.name}
+        dd #{plant.price}
+
+      else
+        p This greenhouse has no plants.

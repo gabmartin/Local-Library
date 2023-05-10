@@ -1,9 +1,9 @@
+const { body, validationResult } = require("express-validator");
 const {Plant} = require("../models/plant");
 const {Greenhouse} = require("../models/greenhouse");
 const {Type} = require("../models/type");
 const {PlantInstance} = require("../models/plantinstance");
-
-const { body, validationResult } = require("express-validator");
+const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
 
 exports.index = asyncHandler(async (req, res, next) => {
@@ -46,18 +46,112 @@ exports.plant_list = asyncHandler(async (req, res, next) => {
 
 // Display detail page for a specific plant.
 exports.plant_detail = asyncHandler(async (req, res, next) => {
-  res.send(`NOT IMPLEMENTED: Plant detail: ${req.params.id}`);
+  const id = mongoose.Types.ObjectId(req.params.id);
+  // Get details of plants, plant instances for specific plant
+  const [plant, plantInstances] = await Promise.all([
+    Plant.findById(id).populate("greenhouse").populate("type").exec(),
+    PlantInstance.find({ plant: id }).exec(),
+  ]);
+
+  if (plant === null) {
+    // No results.
+    const err = new Error("Plant not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render("plant_detail", {
+    title: plant.name,
+    plant: plant,
+    plant_instances: plantInstances,
+  });
 });
+
 
 // Display plant create form on GET.
 exports.plant_create_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Plant create GET");
+  // Get all greenhouses and types, which we can use for adding to our plant.
+  const [allGreenhouses, allTypes] = await Promise.all([
+    Greenhouse.find().exec(),
+    Type.find().exec(),
+  ]);
+
+  res.render("plant_form", {
+    title: "Create Plant",
+    greenhouses: allGreenhouses,
+    types: allTypes,
+  });
 });
 
+
 // Handle plant create on POST.
-exports.plant_create_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Plant create POST");
-});
+exports.plant_create_post = [
+  // Convert the type to an array.
+  (req, res, next) => {
+    if (!(req.body.type instanceof Array)) {
+      if (typeof req.body.type === "undefined") req.body.type = [];
+      else req.body.type = new Array(req.body.type);
+    }
+    next();
+  },
+
+  // Validate and sanitize fields.
+  body("name", "Name must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("greenhouse", "Greenhouse must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("price", "Price must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("type.*").escape(),
+  // Process request after validation and sanitization.
+
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create a Plant object with escaped and trimmed data.
+    const plant = new Plant({
+      name: req.body.name,
+      greenhouse: req.body.greenhouse,
+      price: req.body.price,
+      type: req.body.type,
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+
+      // Get all greenhouses and types for form.
+      const [allGreenhouses, allTypes] = await Promise.all([
+        Greenhouse.find().exec(),
+        Type.find().exec(),
+      ]);
+
+      // Mark our selected types as checked.
+      for (const type of allTypes) {
+        if (plant.type.indexOf(type._id) > -1) {
+          type.checked = "true";
+        }
+      }
+      res.render("plant_form", {
+        title: "Create Plant",
+        greenhouses: allGreenhouses,
+        types: allTypes,
+        plant: plant,
+        errors: errors.array(),
+      });
+    } else {
+      // Data from form is valid. Save plant.
+      await plant.save();
+      res.redirect(plant.url);
+    }
+  }),
+];
 
 // Display plant delete form on GET.
 exports.plant_delete_get = asyncHandler(async (req, res, next) => {

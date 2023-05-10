@@ -1,0 +1,18 @@
+extends layout
+
+block content
+
+  h1 Type: #{type.name}
+
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Plants
+
+    dl
+      each plant in type_plants
+        dt
+          a(href=plant.url) #{plant.name}
+        dd #{plant.price}
+
+      else
+        p This type has no plants
