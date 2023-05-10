@@ -1,4 +1,6 @@
+const { body, validationResult } = require("express-validator");
 const { PlantInstance } = require("../models/plantinstance");
+const { Plant } = require("../models/plant");
 const asyncHandler = require('express-async-handler');
 const mongoose = require("mongoose");
 
@@ -34,15 +36,59 @@ exports.plantinstance_detail = asyncHandler(async (req, res, next) => {
 });
 
 
-// Display Plantinstance create form on GET.
+// Display PlantInstance create form on GET.
 exports.plantinstance_create_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Plantinstance create GET");
+  const allPlants = await Plant.find({}, "name").exec();
+
+  res.render("plantinstance_form", {
+    title: "Create PlantInstance",
+    plant_list: allPlants,
+  });
 });
 
-// Handle Plantinstance create on POST.
-exports.plantinstance_create_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Plantinstance create POST");
-});
+
+// Handle PlantInstance create on POST.
+exports.plantinstance_create_post = [
+  // Validate and sanitize fields.
+  body("plant", "Plant must be specified").trim().isLength({ min: 1 }).escape(),
+  body("imprint", "Imprint must be specified")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("status").escape(),
+
+  // Process request after validation and sanitization.
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create a PlantInstance object with escaped and trimmed data.
+    const plantInstance = new PlantInstance({
+      plant: req.body.plant,
+      imprint: req.body.imprint,
+      status: req.body.status,
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors.
+      // Render form again with sanitized values and error messages.
+      const allPlants = await Plant.find({}, "title").exec();
+
+      res.render("plantinstance_form", {
+        title: "Create PlantInstance",
+        plant_list: allPlants,
+        selected_plant: plantInstance.plant._id,
+        errors: errors.array(),
+        plantinstance: plantInstance,
+      });
+      return;
+    } else {
+      // Data from form is valid
+      await plantInstance.save();
+      res.redirect(plantInstance.url);
+    }
+  }),
+];
 
 // Display Plantinstance delete form on GET.
 exports.plantinstance_delete_get = asyncHandler(async (req, res, next) => {

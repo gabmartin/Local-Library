@@ -1,0 +1,30 @@
+extends layout
+
+block content
+  h1=title
+
+  form(method='POST' action='')
+    div.form-group
+      label(for='plant') Plant:
+      select#plant.form-control(type='select' placeholder='Select plant' name='plant' required='true')
+        - plant_list.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
+        for plant in plant_list
+          option(value=plant._id, selected=(selected_plant==plant._id.toString() ? 'selected' : false) ) #{plant.name}
+
+    div.form-group
+      label(for='imprint') Imprint:
+      input#imprint.form-control(type='text' placeholder='Andalucia, 2022' name='imprint' required='true' value=(undefined===plantinstance ? '' : plantinstance.imprint))
+
+    div.form-group
+      label(for='status') Status:
+      select#status.form-control(type='select' placeholder='Select status' name='status' required='true')
+        option(value='Mantenimiento') Mantenimiento
+        option(value='Disponible') Disponible
+        option(value='Reservada') Reservada
+
+    button.btn.btn-primary(type='submit') Submit
+
+  if errors
+    ul
+      for error in errors
+        li!= error.msg
