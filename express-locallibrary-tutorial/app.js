@@ -3,12 +3,16 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const passport = require('passport');
+const session = require('express-session');
+const flash = require('connect-flash'); // Mostrar mensajes entre paginas.
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const catalogRouter = require('./routes/catalog'); // Importar las rutas de la parte "Catálogo" de la web
 
 var app = express();
+require('./passport/local_auth');
 
 // Configurar la conexion con mongoose
 const mongoose = require("mongoose");
@@ -29,6 +33,23 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Antes de inicializar passport tenemos que configurar la sesion con express-session
+app.use(session({
+  secret: 'mysecretsession',
+  resave: false,
+  saveUninitialized: false
+}));
+app.use(flash()); // Flash usa las sesiones, debe ir después. 
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use((req, res, next) => {
+  app.locals.signupMessage = req.flash('signupMessage');
+  app.locals.signinMessage = req.flash('signinMessage');
+
+  next();
+}); // Middleware para mostrar el mensaje de fallo del login en todas las vistas.
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
