@@ -15,3 +15,7 @@ block content
       span.text-danger #{plantinstance.status}
     else
       span.text-warning #{plantinstance.status}
+  hr
+  p
+    a(href=plantinstance.url+'/delete') Delete instance
+

@@ -155,10 +155,11 @@ exports.plant_create_post = [
 
 // Display plant delete form on GET.
 exports.plant_delete_get = asyncHandler(async (req, res, next) => {
+  const id = mongoose.Types.ObjectId(req.params.id);
   // Get details of plant and all their instances (in parallel)
   const [plant, allInstancesByPlant] = await Promise.all([
-    Plant.findById(req.params.id).exec(),
-    PlantInstance.find({ plant: req.params.id }, "imprint status").exec(),
+    Plant.findById(id).exec(),
+    PlantInstance.find({ plant: id }, "imprint status").exec(),
   ]);
 
   if (plant === null) {
@@ -176,10 +177,11 @@ exports.plant_delete_get = asyncHandler(async (req, res, next) => {
 
 // Handle Greenhouse delete on POST.
 exports.plant_delete_post = asyncHandler(async (req, res, next) => {
+  const id = mongoose.Types.ObjectId(req.params.id);
   // Get details of greenhouse and all their plants (in parallel)
   const [plant, allInstancesByPlant] = await Promise.all([
-    Plant.findById(req.params.id).exec(),
-    PlantInstance.find({ plant: req.params.id }, "imprint status").exec(),
+    Plant.findById(id).exec(),
+    PlantInstance.find({ plant: id }, "imprint status").exec(),
   ]);
 
   if (allInstancesByPlant.length > 0) {

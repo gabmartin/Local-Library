@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1 #{title}: #{plantInstance.plant}
+  p= plantInstance.imprint
+  p= plantInstance.status
+
+    p Do you really want to delete this instance?
+
+    form(method='POST' action='')
+      div.form-group
+        input#plantinstanceid.form-control(type='hidden', name='plantinstanceid', required='true', value=plantInstance._id )
+
+      button.btn.btn-primary(type='submit') Delete

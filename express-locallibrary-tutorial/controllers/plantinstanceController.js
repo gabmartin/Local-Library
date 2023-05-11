@@ -1,7 +1,7 @@
 const { body, validationResult } = require("express-validator");
 const { PlantInstance } = require("../models/plantinstance");
 const { Plant } = require("../models/plant");
-const asyncHandler = require('express-async-handler');
+const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
 
 // Display list of all PlantInstances.
@@ -13,7 +13,6 @@ exports.plantinstance_list = asyncHandler(async (req, res, next) => {
     plantinstance_list: allPlantInstances,
   });
 });
-
 
 // Display detail page for a specific PlantInstance.
 exports.plantinstance_detail = asyncHandler(async (req, res, next) => {
@@ -35,7 +34,6 @@ exports.plantinstance_detail = asyncHandler(async (req, res, next) => {
   });
 });
 
-
 // Display PlantInstance create form on GET.
 exports.plantinstance_create_get = asyncHandler(async (req, res, next) => {
   const allPlants = await Plant.find({}, "name").exec();
@@ -45,7 +43,6 @@ exports.plantinstance_create_get = asyncHandler(async (req, res, next) => {
     plant_list: allPlants,
   });
 });
-
 
 // Handle PlantInstance create on POST.
 exports.plantinstance_create_post = [
@@ -90,14 +87,28 @@ exports.plantinstance_create_post = [
   }),
 ];
 
-// Display Plantinstance delete form on GET.
+// Display plant delete form on GET.
 exports.plantinstance_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Plantinstance delete GET");
+  const id = mongoose.Types.ObjectId(req.params.id);
+  // Get details of instances
+  const plantInstance = await PlantInstance.findById(id).exec();
+
+  if (plantInstance === null) {
+    // No results.
+    res.redirect("/catalog/plantintances");
+  }
+
+  res.render("plantinstance_delete", {
+    title: "Delete Instance",
+    plantInstance: plantInstance,
+  });
 });
 
-// Handle Plantinstance delete on POST.
+// Handle Greenhouse delete on POST.
 exports.plantinstance_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Plantinstance delete POST");
+  const id = mongoose.Types.ObjectId(req.params.id);
+  await PlantInstance.findByIdAndRemove(id);
+  res.redirect("/catalog/plantinstances");
 });
 
 // Display Plantinstance update form on GET.

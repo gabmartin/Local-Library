@@ -1,6 +1,6 @@
 const { body, validationResult } = require("express-validator");
 const { Type } = require("../models/type");
-const asyncHandler = require('express-async-handler');
+const asyncHandler = require("express-async-handler");
 const { Plant } = require("../models/plant");
 const mongoose = require("mongoose");
 
@@ -12,7 +12,6 @@ exports.type_list = asyncHandler(async (req, res, next) => {
     type_list: allTypes,
   });
 });
-
 
 // Display detail page for a specific Type.
 exports.type_detail = asyncHandler(async (req, res, next) => {
@@ -35,7 +34,6 @@ exports.type_detail = asyncHandler(async (req, res, next) => {
     type_plants: plantsInType,
   });
 });
-
 
 // Display Type create form on GET.
 exports.type_create_get = (req, res, next) => {
@@ -82,14 +80,47 @@ exports.type_create_post = [
   }),
 ];
 
-// Display type delete form on GET.
+// Display Type delete form on GET.
 exports.type_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: type delete GET");
+  // Get details of type and all their plants (in parallel)
+  const [type, allPlantsByType] = await Promise.all([
+    Type.findById(req.params.id).exec(),
+    Plant.find({ type: req.params.id }, "name price").exec(),
+  ]);
+
+  if (type === null) {
+    // No results.
+    res.redirect("/catalog/types");
+  }
+
+  res.render("type_delete", {
+    title: "Delete type",
+    type: type,
+    type_plants: allPlantsByType,
+  });
 });
 
-// Handle type delete on POST.
+// Handle Author delete on POST.
 exports.type_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: type delete POST");
+  // Get details of type and all their plants (in parallel)
+  const [type, allPlantsByType] = await Promise.all([
+    Type.findById(req.params.id).exec(),
+    Plant.find({ type: req.params.id }, "name price").exec(),
+  ]);
+
+  if (allPlantsByType.length > 0) {
+    // Type has plants. Render in same way as for GET route.
+    res.render("type_delete", {
+      title: "Delete type",
+      type: type,
+      type_plants: allPlantsByType,
+    });
+    return;
+  } else {
+    // Type has no plants. Delete object and redirect to the list of types.
+    await Type.findByIdAndRemove(req.body.typeid);
+    res.redirect("/catalog/types");
+  }
 });
 
 // Display type update form on GET.
