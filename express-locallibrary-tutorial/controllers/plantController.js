@@ -201,10 +201,109 @@ exports.plant_delete_post = asyncHandler(async (req, res, next) => {
 
 // Display plant update form on GET.
 exports.plant_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Plant update GET");
+  // Get plant, greenhouses and types for form.
+  const [plant, allGreenhouses, allTypes] = await Promise.all([
+    Plant.findById(req.params.id).populate("greenhouse").populate("type").exec(),
+    Greenhouse.find().exec(),
+    Type.find().exec(),
+  ]);
+
+  if (plant === null) {
+    // No results.
+    const err = new Error("Plant not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  // Mark our selected types as checked.
+  for (const type of allTypes) {
+    for (const plant_g of plant.type) {
+      if (type._id.toString() === plant_g._id.toString()) {
+        type.checked = "true";
+      }
+    }
+  }
+
+  res.render("plant_form", {
+    title: "Update Plant",
+    greenhouses: allGreenhouses,
+    types: allTypes,
+    plant: plant,
+  });
 });
 
 // Handle plant update on POST.
-exports.plant_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Plant update POST");
-});
+exports.plant_update_post = [
+  // Convert the type to an array.
+  (req, res, next) => {
+    if (!(req.body.type instanceof Array)) {
+      if (typeof req.body.type === "undefined") {
+        req.body.type = [];
+      } else {
+        req.body.type = new Array(req.body.type);
+      }
+    }
+    next();
+  },
+
+  // Validate and sanitize fields.
+  body("name", "Name must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("greenhouse", "Greenhouse must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("price", "Price must not be empty.")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("type.*").escape(),
+
+  // Process request after validation and sanitization.
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create a Plant object with escaped/trimmed data and old id.
+    const plant = new Plant({
+      name: req.body.name,
+      greenhouse: req.body.greenhouse,
+      price: req.body.price,
+      type: typeof req.body.type === "undefined" ? [] : req.body.type,
+      _id: req.params.id, // This is required, or a new ID will be assigned!
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render form again with sanitized values/error messages.
+
+      // Get all greenhouses and types for form
+      const [allGreenhouses, allTypes] = await Promise.all([
+        Greenhouse.find().exec(),
+        Type.find().exec(),
+      ]);
+
+      // Mark our selected types as checked.
+      for (const type of allTypes) {
+        if (plant.type.indexOf(types._id) > -1) {
+          type.checked = "true";
+        }
+      }
+      res.render("plant_form", {
+        title: "Update Plant",
+        greenhouses: allGreenhouses,
+        types: allTypes,
+        plant: plant,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      // Data from form is valid. Update the record.
+      const theplant = await Plant.findByIdAndUpdate(req.params.id, plant, {});
+      // Redirect to plant detail page.
+      res.redirect(theplant.url);
+    }
+  }),
+];
+

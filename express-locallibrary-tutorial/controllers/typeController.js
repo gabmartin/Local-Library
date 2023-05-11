@@ -123,12 +123,51 @@ exports.type_delete_post = asyncHandler(async (req, res, next) => {
   }
 });
 
-// Display type update form on GET.
+// Display Type update form on GET.
 exports.type_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: type update GET");
+  const type = await Type.findById(req.params.id).exec();
+
+  if (type === null) {
+    // No results.
+    const err = new Error("Type not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render("type_form", { title: "Update Type", type: type });
 });
 
-// Handle type update on POST.
-exports.type_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: type update POST");
-});
+// Handle Type update on POST.
+exports.type_update_post = [
+  // Validate and sanitize the name field.
+  body("name", "Type name must contain at least 3 characters")
+    .trim()
+    .isLength({ min: 3 })
+    .escape(),
+
+  // Process request after validation and sanitization.
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request .
+    const errors = validationResult(req);
+
+    // Create a type object with escaped and trimmed data (and the old id!)
+    const type = new Type({
+      name: req.body.name,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render the form again with sanitized values and error messages.
+      res.render("type_form", {
+        title: "Update Type",
+        type: type,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      // Data from form is valid. Update the record.
+      await Type.findByIdAndUpdate(req.params.id, type);
+      res.redirect(type.url);
+    }
+  }),
+];

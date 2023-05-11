@@ -111,12 +111,71 @@ exports.plantinstance_delete_post = asyncHandler(async (req, res, next) => {
   res.redirect("/catalog/plantinstances");
 });
 
-// Display Plantinstance update form on GET.
+// Display plantInstance update form on GET.
 exports.plantinstance_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Plantinstance update GET");
+  // Get plant, all plants for form (in parallel)
+  const [plantInstance, allPlants] = await Promise.all([
+    PlantInstance.findById(req.params.id).populate("plant").exec(),
+    Plant.find(),
+  ]);
+
+  if (plantInstance === null) {
+    // No results.
+    const err = new Error("plant copy not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render("plantinstance_form", {
+    title: "Update Instance",
+    plant_list: allPlants,
+    selected_plant: plantInstance.plant._id,
+    plantinstance: plantInstance,
+  });
 });
 
-// Handle plantinstance update on POST.
-exports.plantinstance_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Plantinstance update POST");
-});
+// Handle plantInstance update on POST.
+exports.plantinstance_update_post = [
+  // Validate and sanitize fields.
+  body("plant", "Plant must be specified").trim().isLength({ min: 1 }).escape(),
+  body("imprint", "Imprint must be specified")
+    .trim()
+    .isLength({ min: 1 })
+    .escape(),
+  body("status").escape(),
+
+  // Process request after validation and sanitization.
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create a plantInstance object with escaped/trimmed data and current id.
+    const plantInstance = new PlantInstance({
+      plant: req.body.plant,
+      imprint: req.body.imprint,
+      status: req.body.status,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors.
+      // Render the form again, passing sanitized values and errors.
+
+      const allPlants = await Plant.find({}, "name").exec();
+
+      res.render("plantinstance_form", {
+        title: "Update Instance",
+        plant_list: allPlants,
+        selected_plant: plantInstance.plant._id,
+        errors: errors.array(),
+        plantinstance: plantInstance,
+      });
+      return;
+    } else {
+      // Data from form is valid.
+      await PlantInstance.findByIdAndUpdate(req.params.id, plantInstance, {});
+      // Redirect to detail page.
+      res.redirect(plantInstance.url);
+    }
+  }),
+];

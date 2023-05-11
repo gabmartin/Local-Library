@@ -130,12 +130,58 @@ exports.greenhouse_delete_post = asyncHandler(async (req, res, next) => {
   }
 });
 
+
 // Display Greenhouse update form on GET.
 exports.greenhouse_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Greenhouse update GET");
+  const greenhouse = await Greenhouse.findById(req.params.id).exec();
+  if (greenhouse === null) {
+    // No results.
+    const err = new Error("Greenhouse not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render("greenhouse_form", { title: "Update Greenhouse", greenhouse: greenhouse });
 });
 
 // Handle Greenhouse update on POST.
-exports.greenhouse_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Greenhouse update POST");
-});
+exports.greenhouse_update_post = [
+  // Validate and sanitize fields.
+  body("name")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("Name must be specified."),
+  body("location")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("Location must be specified."),
+
+  // Process request after validation and sanitization.
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create Greenhouse object with escaped and trimmed data (and the old id!)
+    const greenhouse = new Greenhouse({
+      name: req.body.name,
+      location: req.body.location,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render the form again with sanitized values and error messages.
+      res.render("greenhouse_form", {
+        title: "Update Greenhouse",
+        greenhouse: greenhouse,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      // Data from form is valid. Update the record.
+      await Greenhouse.findByIdAndUpdate(req.params.id, greenhouse);
+      res.redirect(greenhouse.url);
+    }
+  }),
+];
