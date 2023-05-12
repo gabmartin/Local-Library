@@ -1,19 +1,19 @@
 extends layout
 
 block content
-  h1 Title: #{plant.name}
+  h1 Título: #{plant.name}
 
-  p #[strong Greenhouse:]
+  p #[strong Invernadero: ]
     a(href=plant.greenhouse.url) #{plant.greenhouse.name}
-  p #[strong Price:] #{plant.price}
-  p #[strong Type:]
+  p #[strong Precio: ] #{plant.price}
+  p #[strong Tipo: ]
     each val, index in plant.type
       a(href=val.url) #{val.name}
       if index < plant.type.length - 1
         |,
 
   div(style='margin-left:20px;margin-top:20px')
-    h4 Copies
+    h4 Copias
 
     each val in plant_instances
       hr
@@ -23,15 +23,15 @@ block content
         p.text-danger #{val.status}
       else
         p.text-warning #{val.status}
-      p #[strong Id:]
+      p #[strong Id: ]
         a(href=val.url) #{val._id}
 
     else
-      p There are no copies of this plant in the library.
+      p No existe stock de esta planta.
   hr
   if(currentUser.email==='admin@gmail.com')
     p
-      a(href=plant.url+'/delete') Delete plant
+      a(href=plant.url+'/delete') Borrar planta
     p
-      a(href=plant.url+'/update') Update plant
+      a(href=plant.url+'/update') Eliminar planta
 

@@ -5,7 +5,7 @@ block content
 
   form(method='POST' action='')
     div.form-group
-      label(for='plant') Plant:
+      label(for='plant') Planta:
       select#plant.form-control(type='select' placeholder='Select plant' name='plant' required='true')
         - plant_list.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         for plant in plant_list
@@ -16,13 +16,13 @@ block content
       input#imprint.form-control(type='text' placeholder='Andalucia, 2022' name='imprint' required='true' value=(undefined===plantinstance ? '' : plantinstance.imprint))
 
     div.form-group
-      label(for='status') Status:
+      label(for='status') Estado:
       select#status.form-control(type='select' placeholder='Select status' name='status' required='true')
         option(value='Mantenimiento') Mantenimiento
         option(value='Disponible') Disponible
         option(value='Reservada') Reservada
 
-    button.btn.btn-primary(type='submit') Submit
+    button.btn.btn-primary(type='submit') Enviar
 
   if errors
     ul

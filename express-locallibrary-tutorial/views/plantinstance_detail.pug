@@ -4,11 +4,11 @@ block content
 
   h1 ID: #{plantinstance._id}
 
-  p #[strong Title:]
+  p #[strong Título: ]
     a(href=plantinstance.plant.url) #{plantinstance.plant.name}
-  p #[strong Imprint:] #{plantinstance.imprint}
+  p #[strong Imprint: ] #{plantinstance.imprint}
 
-  p #[strong Status:]
+  p #[strong Estado: ]
     if plantinstance.status=='Disponible'
       span.text-success #{plantinstance.status}
     else if plantinstance.status=='Mantenimiento'
@@ -18,7 +18,7 @@ block content
   hr
   if(currentUser.email==='admin@gmail.com')
     p
-      a(href=plantinstance.url+'/delete') Delete instance
+      a(href=plantinstance.url+'/delete') Borrar stock
     p
-      a(href=plantinstance.url+'/update') Update instance
+      a(href=plantinstance.url+'/update') Actualizar stock
 

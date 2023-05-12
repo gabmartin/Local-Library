@@ -6,11 +6,11 @@ block content
 
   if greenhouse_plants.length
 
-    p #[strong Delete the following plants before attempting to delete this greenhouse.]
+    p #[strong Borra estas plantas antes de intentar eliminar el invernadero.]
 
     div(style='margin-left:20px;margin-top:20px')
 
-      h4 Plants
+      h4 Plantas
 
       dl
       each plant in greenhouse_plants
@@ -19,10 +19,10 @@ block content
         dd #{plant.price}
 
   else
-    p Do you really want to delete this Greenhouse?
+    p ¿Estás seguro de que quieres eliminar este invernadero?
 
     form(method='POST' action='')
       div.form-group
         input#greenhouseid.form-control(type='hidden',name='greenhouseid', required='true', value=greenhouse._id )
 
-      button.btn.btn-primary(type='submit') Delete
+      button.btn.btn-primary(type='submit') Eliminar

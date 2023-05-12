@@ -2,23 +2,23 @@ extends layout
 
 block content
 
-  h1 Type: #{type.name}
+  h1 Tipo: #{type.name}
 
   div(style='margin-left:20px;margin-top:20px')
 
-    h4 Plants
+    h4 Plantas
 
     dl
       each plant in type_plants
         dt
-          a(href=plant.url) #{plant.name}
-        dd #{plant.price}
+          a(href=plant.url) #{plant.id}
+        dd PRECIO: #{plant.price}
 
       else
-        p This type has no plants
+        p Este tipo no tiene plantas
   hr
   if(currentUser.email==='admin@gmail.com')
     p
-      a(href=type.url+'/delete') Delete type
+      a(href=type.url+'/delete') Borrar tipo
     p
-      a(href=type.url+'/update') Update type
+      a(href=type.url+'/update') Actualizar tipo

@@ -6,11 +6,11 @@ block content
 
   if plant_instances.length
 
-    p #[strong Delete the following plantintances before attempting to delete this plant.]
+    p #[strong Borra el stock antes de intentar eliminar la planta.]
 
     div(style='margin-left:20px;margin-top:20px')
 
-      h4 Plant Intances
+      h4 Copias de plantas
 
       dl
       each instance in plant_instances
@@ -19,10 +19,10 @@ block content
         dd #{plant.status}
 
   else
-    p Do you really want to delete this Plant?
+    p ¿Estás seguro de que quieres eliminar esta planta?
 
     form(method='POST' action='')
       div.form-group
         input#plantid.form-control(type='hidden',name='plantid', required='true', value=plant._id )
 
-      button.btn.btn-primary(type='submit') Delete
+      button.btn.btn-primary(type='submit') Eliminar

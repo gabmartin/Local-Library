@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 exports.greenhouse_list = asyncHandler(async (req, res, next) => {
   const allGreenhouses = await Greenhouse.find().sort({ name: 1 }).exec();
   res.render("greenhouse_list", {
-    title: "Greenhouse List",
+    title: "Lista de invernaderos",
     greenhouse_list: allGreenhouses,
   });
 });
@@ -25,13 +25,13 @@ exports.greenhouse_detail = asyncHandler(async (req, res, next) => {
 
   if (greenhouse === null) {
     // No results.
-    const err = new Error("Greenhouse not found");
+    const err = new Error("No se ha encontrado el invernadero");
     err.status = 404;
     return next(err);
   }
 
   res.render("greenhouse_detail", {
-    title: "Greenhouse Detail",
+    title: "Lista de invernaderos",
     greenhouse: greenhouse,
     greenhouse_plants: allPlantsByGreenhouse,
   });
@@ -39,7 +39,7 @@ exports.greenhouse_detail = asyncHandler(async (req, res, next) => {
 
 // Display Greenhouse create form on GET.
 exports.greenhouse_create_get = (req, res, next) => {
-  res.render("greenhouse_form", { title: "Create Greenhouse" });
+  res.render("greenhouse_form", { title: "Crear invernadero" });
 };
 
 // Handle Greenhouse create on POST.
@@ -49,12 +49,12 @@ exports.greenhouse_create_post = [
     .trim()
     .isLength({ min: 3 })
     .escape()
-    .withMessage("Name must be specified."),
+    .withMessage("Debes especificar el nombre."),
     body("location")
     .trim()
     .isLength({ min: 3 })
     .escape()
-    .withMessage("Location must be specified."),
+    .withMessage("Debes especificar la localización."),
 
   // Process request after validation and sanitization.
   asyncHandler(async (req, res, next) => {
@@ -70,7 +70,7 @@ exports.greenhouse_create_post = [
     if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/errors messages.
       res.render("greenhouse_form", {
-        title: "Create Greenhouse",
+        title: "Crear invernadero",
         greenhouse: greenhouse,
         errors: errors.array(),
       });
@@ -100,7 +100,7 @@ exports.greenhouse_delete_get = asyncHandler(async (req, res, next) => {
   }
 
   res.render("greenhouse_delete", {
-    title: "Delete Greenhouse",
+    title: "Lista de invernaderos",
     greenhouse: greenhouse,
     greenhouse_plants: allPlantsByGreenhouse,
   });
@@ -118,7 +118,7 @@ exports.greenhouse_delete_post = asyncHandler(async (req, res, next) => {
   if (allPlantsByGreenhouse.length > 0) {
     // Greenhouse has plants. Render in same way as for GET route.
     res.render("greenhouse_delete", {
-      title: "Delete Greenhouse",
+      title: "Lista de invernaderos",
       greenhouse: greenhouse,
       greenhouse_plants: allPlantsByGreenhouse,
     });
@@ -136,12 +136,12 @@ exports.greenhouse_update_get = asyncHandler(async (req, res, next) => {
   const greenhouse = await Greenhouse.findById(req.params.id).exec();
   if (greenhouse === null) {
     // No results.
-    const err = new Error("Greenhouse not found");
+    const err = new Error("No se ha encontrado el invernadero.");
     err.status = 404;
     return next(err);
   }
 
-  res.render("greenhouse_form", { title: "Update Greenhouse", greenhouse: greenhouse });
+  res.render("greenhouse_form", { title: "Actualizar invernadero", greenhouse: greenhouse });
 });
 
 // Handle Greenhouse update on POST.
@@ -151,12 +151,12 @@ exports.greenhouse_update_post = [
     .trim()
     .isLength({ min: 1 })
     .escape()
-    .withMessage("Name must be specified."),
+    .withMessage("Debes especificar el nombre."),
   body("location")
     .trim()
     .isLength({ min: 1 })
     .escape()
-    .withMessage("Location must be specified."),
+    .withMessage("Debes especificar la localización."),
 
   // Process request after validation and sanitization.
   asyncHandler(async (req, res, next) => {
@@ -173,7 +173,7 @@ exports.greenhouse_update_post = [
     if (!errors.isEmpty()) {
       // There are errors. Render the form again with sanitized values and error messages.
       res.render("greenhouse_form", {
-        title: "Update Greenhouse",
+        title: "Actualizar invernadero",
         greenhouse: greenhouse,
         errors: errors.array(),
       });

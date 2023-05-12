@@ -5,10 +5,10 @@ block content
 
   form(method='POST' action='')
     div.form-group
-      label(for='name') Name:
+      label(for='name') Nombre:
       input#name.form-control(type='text', placeholder='Name of plant' name='name' required='true' value=(undefined===plant ? '' : plant.name) )
     div.form-group
-      label(for='greenhouse') Greenhouse:
+      label(for='greenhouse') Invernadero:
       select#greenhouse.form-control(type='select', placeholder='Select greenhouse' name='greenhouse' required='true' )
         - greenhouses.sort(function(a, b) {let textA = a.name.toUpperCase(); let textB = b.name.toUpperCase(); return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;});
         for greenhouse in greenhouses
@@ -17,10 +17,10 @@ block content
           else
             option(value=greenhouse._id) #{greenhouse.name}
     div.form-group
-      label(for='price') Price:
+      label(for='price') Precio:
       input#price.form-control(type='number', placeholder='Price of plant' name='price' required='true' value=(undefined===plant ? '' : plant.price) )
     div.form-group
-      label Type:
+      label Tipo:
       div
         for type in types
           div(style='display: inline; padding-right:10px;')

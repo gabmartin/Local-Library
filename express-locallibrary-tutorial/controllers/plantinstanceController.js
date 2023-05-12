@@ -9,7 +9,7 @@ exports.plantinstance_list = asyncHandler(async (req, res, next) => {
   const allPlantInstances = await PlantInstance.find().populate("plant").exec();
 
   res.render("plantinstance_list", {
-    title: "Plant Instance List",
+    title: "Stock de plantas",
     plantinstance_list: allPlantInstances,
   });
 });
@@ -23,13 +23,13 @@ exports.plantinstance_detail = asyncHandler(async (req, res, next) => {
 
   if (plantInstance === null) {
     // No results.
-    const err = new Error("Plant copy not found");
+    const err = new Error("Copia de planta no encontrada.");
     err.status = 404;
     return next(err);
   }
 
   res.render("plantinstance_detail", {
-    title: "Plant:",
+    title: "Planta:",
     plantinstance: plantInstance,
   });
 });
@@ -39,7 +39,7 @@ exports.plantinstance_create_get = asyncHandler(async (req, res, next) => {
   const allPlants = await Plant.find({}, "name").exec();
 
   res.render("plantinstance_form", {
-    title: "Create PlantInstance",
+    title: "Crear copia de planta",
     plant_list: allPlants,
   });
 });
@@ -47,8 +47,8 @@ exports.plantinstance_create_get = asyncHandler(async (req, res, next) => {
 // Handle PlantInstance create on POST.
 exports.plantinstance_create_post = [
   // Validate and sanitize fields.
-  body("plant", "Plant must be specified").trim().isLength({ min: 1 }).escape(),
-  body("imprint", "Imprint must be specified")
+  body("plant", "La planta debe ser especificada").trim().isLength({ min: 1 }).escape(),
+  body("imprint", "La fecha debe ser especificada")
     .trim()
     .isLength({ min: 1 })
     .escape(),
@@ -72,7 +72,7 @@ exports.plantinstance_create_post = [
       const allPlants = await Plant.find({}, "title").exec();
 
       res.render("plantinstance_form", {
-        title: "Create PlantInstance",
+        title: "Crear copia de planta",
         plant_list: allPlants,
         selected_plant: plantInstance.plant._id,
         errors: errors.array(),
@@ -99,7 +99,7 @@ exports.plantinstance_delete_get = asyncHandler(async (req, res, next) => {
   }
 
   res.render("plantinstance_delete", {
-    title: "Delete Instance",
+    title: "Borrar copia de planta",
     plantInstance: plantInstance,
   });
 });
@@ -121,13 +121,13 @@ exports.plantinstance_update_get = asyncHandler(async (req, res, next) => {
 
   if (plantInstance === null) {
     // No results.
-    const err = new Error("plant copy not found");
+    const err = new Error("Copia de planta no encontrada");
     err.status = 404;
     return next(err);
   }
 
   res.render("plantinstance_form", {
-    title: "Update Instance",
+    title: "Actualizar copia de planta",
     plant_list: allPlants,
     selected_plant: plantInstance.plant._id,
     plantinstance: plantInstance,
@@ -137,8 +137,8 @@ exports.plantinstance_update_get = asyncHandler(async (req, res, next) => {
 // Handle plantInstance update on POST.
 exports.plantinstance_update_post = [
   // Validate and sanitize fields.
-  body("plant", "Plant must be specified").trim().isLength({ min: 1 }).escape(),
-  body("imprint", "Imprint must be specified")
+  body("plant", "La planta debe ser especificada").trim().isLength({ min: 1 }).escape(),
+  body("imprint", "La fecha debe ser especificada")
     .trim()
     .isLength({ min: 1 })
     .escape(),
@@ -164,7 +164,7 @@ exports.plantinstance_update_post = [
       const allPlants = await Plant.find({}, "name").exec();
 
       res.render("plantinstance_form", {
-        title: "Update Instance",
+        title: "Actualizar copia de planta",
         plant_list: allPlants,
         selected_plant: plantInstance.plant._id,
         errors: errors.array(),

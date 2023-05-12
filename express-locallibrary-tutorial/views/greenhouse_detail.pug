@@ -2,24 +2,24 @@ extends layout
 
 block content
 
-  h1 Greenhouse: #{greenhouse.name}
+  h1 Invernadero: #{greenhouse.name}
   p #{greenhouse.location}
 
   div(style='margin-left:20px;margin-top:20px')
 
-    h4 Plants
+    h4 Plantas
 
     dl
       each plant in greenhouse_plants
         dt
           a(href=plant.url) #{plant.name}
-        dd Price: #{plant.price}
+        dd Precio: #{plant.price}
 
       else
-        p This greenhouse has no plants.
+        p Este invernadero no tiene plantas.
   hr
   if(currentUser.email==='admin@gmail.com')
     p
-      a(href=greenhouse.url+'/delete') Delete greenhouse
+      a(href=greenhouse.url+'/delete') Borrar invernadero
     p
-      a(href=greenhouse.url+'/update') Update greenhouse
+      a(href=greenhouse.url+'/update') Actualizar invernadero

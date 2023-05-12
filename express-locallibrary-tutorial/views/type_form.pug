@@ -5,9 +5,9 @@ block content
 
   form(method='POST' action='')
     div.form-group
-      label(for='name') Type:
+      label(for='name') Tipo:
       input#name.form-control(type='text', placeholder='Interior, Exterior etc.' name='name' value=(undefined===type ? '' : type.name), required='true')
-    button.btn.btn-primary(type='submit') Submit
+    button.btn.btn-primary(type='submit') Enviar
 
   if errors
    ul

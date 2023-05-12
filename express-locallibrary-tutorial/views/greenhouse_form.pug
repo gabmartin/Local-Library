@@ -5,12 +5,12 @@ block content
 
   form(method='POST' action='')
     div.form-group
-      label(for='name') Name:
+      label(for='name') Nombre:
       input#name.form-control(type='text' placeholder='Name' name='name' required='true' value=(undefined===greenhouse ? '' : greenhouse.name) )
     div.form-group
-      label(for='location') Location:
+      label(for='location') Localización:
       input#location.form-control(type='text' placeholder='Location' name='location' required='true' value=(undefined===greenhouse ? '' : greenhouse.location) )
-    button.btn.btn-primary(type='submit') Submit
+    button.btn.btn-primary(type='submit') Enviar
   if errors
     ul
       for error in errors

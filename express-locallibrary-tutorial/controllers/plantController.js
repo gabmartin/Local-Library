@@ -40,7 +40,7 @@ exports.plant_list = asyncHandler(async (req, res, next) => {
     .populate("greenhouse")
     .exec();
 
-  res.render("plant_list", { title: "Plant List", plant_list: allPlants });
+  res.render("plant_list", { title: "Lista de plantas", plant_list: allPlants });
 });
 
 
@@ -139,7 +139,7 @@ exports.plant_create_post = [
         }
       }
       res.render("plant_form", {
-        title: "Create Plant",
+        title: "Crear planta",
         greenhouses: allGreenhouses,
         types: allTypes,
         plant: plant,
@@ -168,7 +168,7 @@ exports.plant_delete_get = asyncHandler(async (req, res, next) => {
   }
 
   res.render("plant_delete", {
-    title: "Delete Plant",
+    title: "Borrar planta",
     plant: plant,
     plant_instances: allInstancesByPlant,
   });
@@ -187,7 +187,7 @@ exports.plant_delete_post = asyncHandler(async (req, res, next) => {
   if (allInstancesByPlant.length > 0) {
     // Greenhouse has plants. Render in same way as for GET route.
     res.render("plant_delete", {
-      title: "Delete Plant",
+      title: "Borrar planta",
       plant: plant,
       plant_instances: allInstancesByPlant,
     });
@@ -225,7 +225,7 @@ exports.plant_update_get = asyncHandler(async (req, res, next) => {
   }
 
   res.render("plant_form", {
-    title: "Update Plant",
+    title: "Actualizar planta",
     greenhouses: allGreenhouses,
     types: allTypes,
     plant: plant,
@@ -291,7 +291,7 @@ exports.plant_update_post = [
         }
       }
       res.render("plant_form", {
-        title: "Update Plant",
+        title: "Actualizar planta",
         greenhouses: allGreenhouses,
         types: allTypes,
         plant: plant,
