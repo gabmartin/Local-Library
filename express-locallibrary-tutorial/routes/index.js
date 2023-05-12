@@ -9,7 +9,7 @@ const passport = require('passport');
 // });
 
 router.get('/', function (req, res, next) {
-  res.render('logindex');
+  res.redirect('/signin');
 });
 
 router.get('/signup', function (req, res, next) {

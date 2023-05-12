@@ -1,16 +1,16 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #[em LocalLibrary], a very basic Express website developed as a tutorial example on the Mozilla Developer Network.
+  section(id="presentation")
+    div(class="textArea")
+      h1 Plantree: plantas de interior para todo tipo de espacios
+      p ¡Bienvenido a nuestra base de datos! Somos una tienda especializada en plantas de interior. Desde este portal podrás acceder al inventario de la tienda. Si tu perfil es de administrador también puedes crear, eliminar y modificar información según tus necesidades. 
+      p Este inventario incluye información sobre: 
+      ul
+        li #[strong Plantas.] ¿Qué plantas existen en el registro?
+        li #[strong Stock por planta.] ¿Cuantás unidades tenemos en stock de cada planta?
+        li #[strong Unidades disponibles.] ¿Cuantás están disponibles? ¿Cuántas han sido reservadas o se encuentran en mantenimiento?
+        li #[strong Invernaderos.] ¿De dónde procede cada planta?
+        li #[strong Tipos de plantas.] ¿Cómo se clasifica cada planta? Interior, exterior, tropicales, suculentas...
 
-  h1 Dynamic content
-
-  p The library has the following record counts:
-
-  ul
-    li #[strong Plants:] !{plant_count}
-    li #[strong Copies:] !{plant_instance_count}
-    li #[strong Copies available:] !{plant_instance_available_count}
-    li #[strong Greenhouses:] !{greenhouse_count}
-    li #[strong Types:] !{type_count}
+               

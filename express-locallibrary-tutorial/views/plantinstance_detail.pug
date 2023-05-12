@@ -16,8 +16,9 @@ block content
     else
       span.text-warning #{plantinstance.status}
   hr
-  p
-    a(href=plantinstance.url+'/delete') Delete instance
-  p
-    a(href=plantinstance.url+'/update') Update instance
+  if(currentUser.email==='admin@gmail.com')
+    p
+      a(href=plantinstance.url+'/delete') Delete instance
+    p
+      a(href=plantinstance.url+'/update') Update instance
 

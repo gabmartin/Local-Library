@@ -17,7 +17,8 @@ block content
       else
         p This type has no plants
   hr
-  p
-    a(href=type.url+'/delete') Delete type
-  p
-    a(href=type.url+'/update') Update type
+  if(currentUser.email==='admin@gmail.com')
+    p
+      a(href=type.url+'/delete') Delete type
+    p
+      a(href=type.url+'/update') Update type

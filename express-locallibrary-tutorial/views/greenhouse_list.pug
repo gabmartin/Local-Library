@@ -1,13 +1,14 @@
 extends layout
 
 block content
-  h1= title
+  div.list-block
+    h1= title
+    div(class="list-group list-group-light")
+      ul
+        each greenhouse in greenhouse_list
+          li(class="list-group-item list-group-item-action px-3")
+            a(href=greenhouse.url) #{greenhouse.name}
+            |  (#{greenhouse.location})
 
-  ul
-    each greenhouse in greenhouse_list
-      li
-        a(href=greenhouse.url) #{greenhouse.name}
-        |  (#{greenhouse.location})
-
-    else
-      li There are no greenhouses.
+        else
+          li There are no greenhouses.

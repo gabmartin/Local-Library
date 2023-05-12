@@ -2,7 +2,14 @@ extends main
 
 block body
     div(class='container-fluid')
+        div(class="p-5 text-center")
+            h1(class="mb-3") BASE DE DATOS
+            h4(class="mb-3") Accede con tu correo y contraseña.
         form(action="/signin" method="POST")
-            input(type="email" name="email" placeholder="Email")
-            input(type="password" name="password" placeholder="Password")
-            button(type="submit") Acceder
+            div(class="mb-3")
+                label(for="email" class="form-label") Correo electronico
+                input(type="email" name="email" class="form-control")
+            div(class="mb-3")
+                label(for="password" class="form-label") Contraseña
+                input(type="password" name="password" class="form-control")
+            button(type="submit" class="btn btn-primary") Acceder

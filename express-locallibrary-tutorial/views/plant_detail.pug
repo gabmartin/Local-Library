@@ -29,8 +29,9 @@ block content
     else
       p There are no copies of this plant in the library.
   hr
-  p
-    a(href=plant.url+'/delete') Delete plant
-  p
-    a(href=plant.url+'/update') Update plant
+  if(currentUser.email==='admin@gmail.com')
+    p
+      a(href=plant.url+'/delete') Delete plant
+    p
+      a(href=plant.url+'/update') Update plant
 

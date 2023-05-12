@@ -13,28 +13,28 @@ html(lang='en')
       div(class='row')
         div(class='col-sm-2')
           block sidebar
-            ul(class='sidebar-nav')
-              li
-                a(href='/catalog') Home
-              li
-                a(href='/catalog/plants') All plants
-              li
-                a(href='/catalog/greenhouses') All greenhouses
-              li
-                a(href='/catalog/types') All types
-              li
-                a(href='/catalog/plantinstances') All plant-instances
-              li
+            ul(class='sidebar-nav' id='navbar-list')
+              li(class="nav-item")
+                a(class="nav-link" href='/catalog') Inicio
+              li(class="nav-item")
+                a(class="nav-link" href='/catalog/plants') Plantas
+              li(class="nav-item")
+                a(class="nav-link" href='/catalog/greenhouses') Invernaderos 
+              li(class="nav-item")
+                a(class="nav-link" href='/catalog/types') Tipos de plantas
+              li(class="nav-item")
+                a(class="nav-link" href='/catalog/plantinstances') Stock de plantas
+              li(class="nav-item")
                 hr
-              if(currentUser.email==='admin@gmail.com')
-                li
-                  a(href='/catalog/greenhouse/create') Create new greenhouse
-                li
-                  a(href='/catalog/type/create') Create new type
-                li
-                  a(href='/catalog/plant/create') Create new plant
-                li
-                  a(href='/catalog/plantinstance/create') Create new plant instance (copy)
-
+              if(currentUser)
+                if(currentUser.email==='admin@gmail.com')
+                  li(class="nav-item")
+                    a(class="nav-link" href='/catalog/greenhouse/create') Crear invernadero
+                  li(class="nav-item")
+                    a(class="nav-link" href='/catalog/type/create') Crear tipo
+                  li(class="nav-item")
+                    a(class="nav-link" href='/catalog/plant/create') Crear planta
+                  li(class="nav-item")
+                    a(class="nav-link" href='/catalog/plantinstance/create') Crear nuevo stock
         div(class='col-sm-10')
           block content
