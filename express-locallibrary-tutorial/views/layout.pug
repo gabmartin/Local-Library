@@ -26,14 +26,15 @@ html(lang='en')
                 a(href='/catalog/plantinstances') All plant-instances
               li
                 hr
-              li
-                a(href='/catalog/greenhouse/create') Create new greenhouse
-              li
-                a(href='/catalog/type/create') Create new type
-              li
-                a(href='/catalog/plant/create') Create new plant
-              li
-                a(href='/catalog/plantinstance/create') Create new plant instance (copy)
+              if(currentUser.email==='admin@gmail.com')
+                li
+                  a(href='/catalog/greenhouse/create') Create new greenhouse
+                li
+                  a(href='/catalog/type/create') Create new type
+                li
+                  a(href='/catalog/plant/create') Create new plant
+                li
+                  a(href='/catalog/plantinstance/create') Create new plant instance (copy)
 
         div(class='col-sm-10')
           block content

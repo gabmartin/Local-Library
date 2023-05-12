@@ -51,6 +51,11 @@ app.use((req, res, next) => {
   next();
 }); // Middleware para mostrar el mensaje de fallo del login en todas las vistas.
 
+app.use((req, res, next) => {
+  app.locals.currentUser = req.user;
+  next();
+});
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/catalog', catalogRouter); // Añadir las rutas del catálogo a la cadena de middleware

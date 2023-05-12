@@ -32,4 +32,24 @@ router.post('/signin', passport.authenticate('local-signin', {
   passReqToCallback: true
 }));
 
+router.get('/catalog', checkAuthentication, (req, res, next) => {
+  res.render('index');
+});
+
+router.get('/logout', function(req, res, next) {
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('/signin');
+  });
+});
+
+// Si el usuario no está autenticado redirecciona a la pantalla de acceso. 
+// Ejecutamos la funcion en cualquier ruta donde el acceso esté restringido.
+function checkAuthentication (req, res, next){
+  if(req.isAuthenticated()){
+    next();
+  } 
+  res.redirect('/signin');
+};
+
 module.exports = router;
