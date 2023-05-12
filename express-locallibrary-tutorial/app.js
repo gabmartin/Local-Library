@@ -17,7 +17,9 @@ require('./passport/local_auth');
 // Configurar la conexion con mongoose
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
-const mongoDB = "mongodb+srv://gabmartin:EEeV1@cluster0.djvfe48.mongodb.net/local_library?retryWrites=true&w=majority";
+// Set up mongoose connection
+const dev_db_url = "mongodb+srv://gabmartin:EEeV1@cluster0.djvfe48.mongodb.net/local_library?retryWrites=true&w=majority";
+const mongoDB = process.env.MONGODB_URI || dev_db_url;
 
 main().catch((err) => console.log(err));
 async function main(){
