@@ -4,7 +4,7 @@ const { Plant } = require("../models/plant");
 const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
 
-// Display list of all PlantInstances.
+// Mostrar lista de PlantInstances.
 exports.plantinstance_list = asyncHandler(async (req, res, next) => {
   const allPlantInstances = await PlantInstance.find().populate("plant").exec();
 
@@ -14,7 +14,7 @@ exports.plantinstance_list = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Display detail page for a specific PlantInstance.
+// Mostrar página de detalles para un específico PlantInstance.
 exports.plantinstance_detail = asyncHandler(async (req, res, next) => {
   const id = mongoose.Types.ObjectId(req.params.id);
   const plantInstance = await PlantInstance.findById(id)
@@ -34,7 +34,7 @@ exports.plantinstance_detail = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Display PlantInstance create form on GET.
+// Mostrar formulario de creación de plantinstance en get.
 exports.plantinstance_create_get = asyncHandler(async (req, res, next) => {
   const allPlants = await Plant.find({}, "name").exec();
 
@@ -44,7 +44,7 @@ exports.plantinstance_create_get = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Handle PlantInstance create on POST.
+// Manejar la creación de plantinstance en el post.
 exports.plantinstance_create_post = [
   // Validate and sanitize fields.
   body("plant", "La planta debe ser especificada").trim().isLength({ min: 1 }).escape(),
@@ -54,12 +54,12 @@ exports.plantinstance_create_post = [
     .escape(),
   body("status").escape(),
 
-  // Process request after validation and sanitization.
+  // Solicitud de proceso después de la validación y saneamiento.
   asyncHandler(async (req, res, next) => {
-    // Extract the validation errors from a request.
+    // Extraiga los errores de validación de una solicitud.
     const errors = validationResult(req);
 
-    // Create a PlantInstance object with escaped and trimmed data.
+    // Cree un objeto de plantinstance con datos escapados y recortados.
     const plantInstance = new PlantInstance({
       plant: req.body.plant,
       imprint: req.body.imprint,
@@ -67,8 +67,8 @@ exports.plantinstance_create_post = [
     });
 
     if (!errors.isEmpty()) {
-      // There are errors.
-      // Render form again with sanitized values and error messages.
+      // Hay errores.
+      // Renderice el formulario nuevamente con valores saneados y mensajes de error.
       const allPlants = await Plant.find({}, "title").exec();
 
       res.render("plantinstance_form", {
@@ -80,17 +80,17 @@ exports.plantinstance_create_post = [
       });
       return;
     } else {
-      // Data from form is valid
+      // Los datos del formulario son válidos
       await plantInstance.save();
       res.redirect(plantInstance.url);
     }
   }),
 ];
 
-// Display plant delete form on GET.
+// Mostrar forma de eliminación de planta en Get.
 exports.plantinstance_delete_get = asyncHandler(async (req, res, next) => {
   const id = mongoose.Types.ObjectId(req.params.id);
-  // Get details of instances
+  // Obtener detalles de instancias
   const plantInstance = await PlantInstance.findById(id).exec();
 
   if (plantInstance === null) {
@@ -104,14 +104,14 @@ exports.plantinstance_delete_get = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Handle Greenhouse delete on POST.
+// Manejar la eliminacionde instancia en el post.
 exports.plantinstance_delete_post = asyncHandler(async (req, res, next) => {
   const id = mongoose.Types.ObjectId(req.params.id);
   await PlantInstance.findByIdAndRemove(id);
   res.redirect("/catalog/plantinstances");
 });
 
-// Display plantInstance update form on GET.
+// Mostrar formulario de actualización de plantinstance en Get.
 exports.plantinstance_update_get = asyncHandler(async (req, res, next) => {
   // Get plant, all plants for form (in parallel)
   const [plantInstance, allPlants] = await Promise.all([
@@ -134,9 +134,9 @@ exports.plantinstance_update_get = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Handle plantInstance update on POST.
+// Manejar la actualización de PlantInstance en la publicación.
 exports.plantinstance_update_post = [
-  // Validate and sanitize fields.
+  // Validar y sanear campos.
   body("plant", "La planta debe ser especificada").trim().isLength({ min: 1 }).escape(),
   body("imprint", "La fecha debe ser especificada")
     .trim()
@@ -144,12 +144,12 @@ exports.plantinstance_update_post = [
     .escape(),
   body("status").escape(),
 
-  // Process request after validation and sanitization.
+  // Solicitud de proceso después de la validación y saneamiento.
   asyncHandler(async (req, res, next) => {
-    // Extract the validation errors from a request.
+    // Extraiga los errores de validación de una solicitud.
     const errors = validationResult(req);
 
-    // Create a plantInstance object with escaped/trimmed data and current id.
+    // Cree un objeto PlantInstance con datos escapados/recortados e ID.
     const plantInstance = new PlantInstance({
       plant: req.body.plant,
       imprint: req.body.imprint,
@@ -158,8 +158,8 @@ exports.plantinstance_update_post = [
     });
 
     if (!errors.isEmpty()) {
-      // There are errors.
-      // Render the form again, passing sanitized values and errors.
+      // Hay errores.
+      // Renderiza el formulario nuevamente, pasando valores y errores saneados.
 
       const allPlants = await Plant.find({}, "name").exec();
 
@@ -172,9 +172,9 @@ exports.plantinstance_update_post = [
       });
       return;
     } else {
-      // Data from form is valid.
+      // Los datos del formulario son válidos.
       await PlantInstance.findByIdAndUpdate(req.params.id, plantInstance, {});
-      // Redirect to detail page.
+      // Redirigir a la página de detalles.
       res.redirect(plantInstance.url);
     }
   }),

@@ -16,7 +16,7 @@ TypeSchema.virtual("url").get(function () {
   return `/catalog/type/${this._id}`;
 });
 
-// Export model
+// Exportar modelo
 
 const Type = mongoose.model("Type", TypeSchema);
 module.exports = { Type };

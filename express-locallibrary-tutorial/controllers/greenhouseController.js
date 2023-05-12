@@ -4,7 +4,7 @@ const asyncHandler = require('express-async-handler');
 const { Plant } = require("../models/plant");
 const mongoose = require("mongoose");
 
-// Display list of all Greenhouses.
+// Lista de visualización de todos los invernaderos.
 exports.greenhouse_list = asyncHandler(async (req, res, next) => {
   const allGreenhouses = await Greenhouse.find().sort({ name: 1 }).exec();
   res.render("greenhouse_list", {
@@ -14,10 +14,10 @@ exports.greenhouse_list = asyncHandler(async (req, res, next) => {
 });
 
 
-// Display detail page for a specific Greenhouse.
+// Muestra la página de detalles de un invernadero específico.
 exports.greenhouse_detail = asyncHandler(async (req, res, next) => {
   const id = mongoose.Types.ObjectId(req.params.id);
-  // Get details of greenhouse and all their plants (in parallel)
+  // Obtener detalles del invernadero y todas sus plantas (en paralelo)
   const [greenhouse, allPlantsByGreenhouse] = await Promise.all([
     Greenhouse.findById(id).exec(),
     Plant.find({ greenhouse: id }, "name price").exec(),
@@ -37,14 +37,14 @@ exports.greenhouse_detail = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Display Greenhouse create form on GET.
+// Muestre el formulario de creación de invernadero en GET.
 exports.greenhouse_create_get = (req, res, next) => {
   res.render("greenhouse_form", { title: "Crear invernadero" });
 };
 
-// Handle Greenhouse create on POST.
+// Manejar la creación de invernadero en POST.
 exports.greenhouse_create_post = [
-  // Validate and sanitize fields.
+  // Validar y sanear campos.
   body("name")
     .trim()
     .isLength({ min: 3 })
@@ -56,19 +56,19 @@ exports.greenhouse_create_post = [
     .escape()
     .withMessage("Debes especificar la localización."),
 
-  // Process request after validation and sanitization.
+  // Solicitud de proceso después de la validación y saneamiento.
   asyncHandler(async (req, res, next) => {
-    // Extract the validation errors from a request.
+    // Extraiga los errores de validación de una solicitud.
     const errors = validationResult(req);
 
-    // Create Greenhouse object with escaped and trimmed data
+    // Crear objeto de invernadero con datos escapados y recortados
     const greenhouse = new Greenhouse({
       name: req.body.name,
       location: req.body.location,
     });
 
     if (!errors.isEmpty()) {
-      // There are errors. Render form again with sanitized values/errors messages.
+      // Hay errores. Renderice el formulario nuevamente con valores saneados/mensajes de error.
       res.render("greenhouse_form", {
         title: "Crear invernadero",
         greenhouse: greenhouse,
@@ -76,19 +76,19 @@ exports.greenhouse_create_post = [
       });
       return;
     } else {
-      // Data from form is valid.
+      // Data from form es valido.
 
-      // Save greenhouse.
+      // Guarda invernadero.
       await greenhouse.save();
-      // Redirect to new greenhouse record.
+      // Redirigir al nuevo registro de invernadero.
       res.redirect(greenhouse.url);
     }
   }),
 ];
 
-// Display Greenhouse delete form on GET.
+// Muestre el formulario de eliminación de invernadero en GET.
 exports.greenhouse_delete_get = asyncHandler(async (req, res, next) => {
-  // Get details of greenhouse and all their plants (in parallel)
+  // Muestre el formulario de eliminación de invernadero en GET.
   const [greenhouse, allPlantsByGreenhouse] = await Promise.all([
     Greenhouse.findById(req.params.id).exec(),
     Plant.find({ greenhouse: req.params.id }, "name price").exec(),
@@ -107,16 +107,16 @@ exports.greenhouse_delete_get = asyncHandler(async (req, res, next) => {
 });
 
 
-// Handle Greenhouse delete on POST.
+// Manejar la eliminación de invernadero en POST.
 exports.greenhouse_delete_post = asyncHandler(async (req, res, next) => {
-  // Get details of greenhouse and all their plants (in parallel)
+  // Obtener detalles del invernadero y todas sus plantas (en paralelo)
   const [greenhouse, allPlantsByGreenhouse] = await Promise.all([
     Greenhouse.findById(req.params.id).exec(),
     Plant.find({ greenhouse: req.params.id }, "name price").exec(),
   ]);
 
   if (allPlantsByGreenhouse.length > 0) {
-    // Greenhouse has plants. Render in same way as for GET route.
+    // El invernadero tiene plantas. Renderizar de la misma manera que para obtener la ruta.
     res.render("greenhouse_delete", {
       title: "Lista de invernaderos",
       greenhouse: greenhouse,
@@ -124,14 +124,14 @@ exports.greenhouse_delete_post = asyncHandler(async (req, res, next) => {
     });
     return;
   } else {
-    // Greenhouse has no plants. Delete object and redirect to the list of greenhouses.
+    // El invernadero no tiene plantas. Eliminar objeto y redirigir a la lista de invernaderos.
     await Greenhouse.findByIdAndRemove(req.body.greenhouseid);
     res.redirect("/catalog/greenhouses");
   }
 });
 
 
-// Display Greenhouse update form on GET.
+// Mostrar formulario de actualización de invernadero en Get.
 exports.greenhouse_update_get = asyncHandler(async (req, res, next) => {
   const greenhouse = await Greenhouse.findById(req.params.id).exec();
   if (greenhouse === null) {
@@ -144,9 +144,9 @@ exports.greenhouse_update_get = asyncHandler(async (req, res, next) => {
   res.render("greenhouse_form", { title: "Actualizar invernadero", greenhouse: greenhouse });
 });
 
-// Handle Greenhouse update on POST.
+// Manejar la actualización de invernadero en POST.
 exports.greenhouse_update_post = [
-  // Validate and sanitize fields.
+  // Validar y sanear campos.
   body("name")
     .trim()
     .isLength({ min: 1 })
@@ -158,12 +158,12 @@ exports.greenhouse_update_post = [
     .escape()
     .withMessage("Debes especificar la localización."),
 
-  // Process request after validation and sanitization.
+  // Solicitud de proceso después de la validación y saneamiento.
   asyncHandler(async (req, res, next) => {
-    // Extract the validation errors from a request.
+    // Extraer los errores de validación de una solicitud.
     const errors = validationResult(req);
 
-    // Create Greenhouse object with escaped and trimmed data (and the old id!)
+    // Cree objeto de invernadero con datos escapados y recortados (y la antigua identificación)
     const greenhouse = new Greenhouse({
       name: req.body.name,
       location: req.body.location,
@@ -171,7 +171,7 @@ exports.greenhouse_update_post = [
     });
 
     if (!errors.isEmpty()) {
-      // There are errors. Render the form again with sanitized values and error messages.
+      // Hay errores. Renderiza el formulario nuevamente con valores saneados y mensajes de error.
       res.render("greenhouse_form", {
         title: "Actualizar invernadero",
         greenhouse: greenhouse,
@@ -179,7 +179,7 @@ exports.greenhouse_update_post = [
       });
       return;
     } else {
-      // Data from form is valid. Update the record.
+      // Los datos del formulario son válidos. Actualizar el registro.
       await Greenhouse.findByIdAndUpdate(req.params.id, greenhouse);
       res.redirect(greenhouse.url);
     }

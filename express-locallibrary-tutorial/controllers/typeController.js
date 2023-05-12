@@ -4,7 +4,7 @@ const asyncHandler = require("express-async-handler");
 const { Plant } = require("../models/plant");
 const mongoose = require("mongoose");
 
-// Display list of all Types.
+// Mostrar lista de todos los tipos.
 exports.type_list = asyncHandler(async (req, res, next) => {
   const allTypes = await Type.find().sort({ name: 1 }).exec();
   res.render("type_list", {
@@ -13,10 +13,10 @@ exports.type_list = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Display detail page for a specific Type.
+// Mostrar página de detalles para un tipo específico.
 exports.type_detail = asyncHandler(async (req, res, next) => {
   const id = mongoose.Types.ObjectId(req.params.id);
-  // Get details of type and all associated plants (in parallel)
+  // Obtenga detalles del tipo y todas las plantas asociadas (en paralelo)
   const [type, plantsInType] = await Promise.all([
     Type.findById(id).exec(),
     Plant.find({ type: id }, "name price").exec(),
@@ -35,12 +35,12 @@ exports.type_detail = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Display Type create form on GET.
+// Mostrar Type create form en GET.
 exports.type_create_get = (req, res, next) => {
   res.render("type_form", { title: "Crear tipo" });
 };
 
-// Handle Type create on POST.
+// Manejar Type create en POST.
 exports.type_create_post = [
   // Validate and sanitize the name field.
   body("name", "El tipo debe contener al menos 3 caracteres")
@@ -48,16 +48,16 @@ exports.type_create_post = [
     .isLength({ min: 3 })
     .escape(),
 
-  // Process request after validation and sanitization.
+  // Solicitud de proceso después de la validación y desinfección.
   asyncHandler(async (req, res, next) => {
-    // Extract the validation errors from a request.
+    // Extraiga los errores de validación de una solicitud.
     const errors = validationResult(req);
 
-    // Create a type object with escaped and trimmed data.
+    // Cree un objeto tipo con datos escapados y recortados.
     const type = new Type({ name: req.body.name });
 
     if (!errors.isEmpty()) {
-      // There are errors. Render the form again with sanitized values/error messages.
+      // Hay errores. Renderiza el formulario nuevamente con valores saneados/mensajes de error.
       res.render("type_form", {
         title: "Crear tipo",
         type: type,
@@ -65,24 +65,24 @@ exports.type_create_post = [
       });
       return;
     } else {
-      // Data from form is valid.
-      // Check if Type with same name already exists.
+      // Los datos del formulario son válidos.
+      // Verifique si el tipo con el mismo nombre ya existe.
       const typeExists = await Type.findOne({ name: req.body.name }).exec();
       if (typeExists) {
-        // Type exists, redirect to its detail page.
+        // El tipo existe, redirige a su página de detalles.
         res.redirect(typeExists.url);
       } else {
         await type.save();
-        // New type saved. Redirect to type detail page.
+        // Nuevo tipo guardado. Redirigir para escribir la página de detalles.
         res.redirect(type.url);
       }
     }
   }),
 ];
 
-// Display Type delete form on GET.
+// Mostrar Type delete form en GET.
 exports.type_delete_get = asyncHandler(async (req, res, next) => {
-  // Get details of type and all their plants (in parallel)
+  // Obtenga detalles del tipo y todas sus plantas (en paralelo)
   const [type, allPlantsByType] = await Promise.all([
     Type.findById(req.params.id).exec(),
     Plant.find({ type: req.params.id }, "name price").exec(),
@@ -100,16 +100,16 @@ exports.type_delete_get = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Handle Author delete on POST.
+// Manejar Type delete en POST.
 exports.type_delete_post = asyncHandler(async (req, res, next) => {
-  // Get details of type and all their plants (in parallel)
+  // Obtenga detalles del tipo y todas sus plantas (en paralelo)
   const [type, allPlantsByType] = await Promise.all([
     Type.findById(req.params.id).exec(),
     Plant.find({ type: req.params.id }, "name price").exec(),
   ]);
 
   if (allPlantsByType.length > 0) {
-    // Type has plants. Render in same way as for GET route.
+    // El tipo tiene plantas. Renderizar de la misma manera que para obtener la ruta.
     res.render("type_delete", {
       title: "Borrar tipo",
       type: type,
@@ -117,13 +117,13 @@ exports.type_delete_post = asyncHandler(async (req, res, next) => {
     });
     return;
   } else {
-    // Type has no plants. Delete object and redirect to the list of types.
+    // El tipo no tiene plantas. Eliminar el objeto y redirigir a la lista de tipos.
     await Type.findByIdAndRemove(req.body.typeid);
     res.redirect("/catalog/types");
   }
 });
 
-// Display Type update form on GET.
+// Mostrar Type update form en GET.
 exports.type_update_get = asyncHandler(async (req, res, next) => {
   const type = await Type.findById(req.params.id).exec();
 
@@ -137,27 +137,27 @@ exports.type_update_get = asyncHandler(async (req, res, next) => {
   res.render("type_form", { title: "Actualizar tipo", type: type });
 });
 
-// Handle Type update on POST.
+// Manejar Type update en POST.
 exports.type_update_post = [
-  // Validate and sanitize the name field.
+  // Validar y sanear el campo Nombre.
   body("name", "El tipo debe contener al menos 3 caracteres")
     .trim()
     .isLength({ min: 3 })
     .escape(),
 
-  // Process request after validation and sanitization.
+  // Solicitud de proceso después de la validación y desinfección.
   asyncHandler(async (req, res, next) => {
-    // Extract the validation errors from a request .
+    // Extraiga los errores de validación de una solicitud.
     const errors = validationResult(req);
 
-    // Create a type object with escaped and trimmed data (and the old id!)
+    // Cree un objeto tipo con datos escapados y recortados (y la ID antigua)
     const type = new Type({
       name: req.body.name,
       _id: req.params.id,
     });
 
     if (!errors.isEmpty()) {
-      // There are errors. Render the form again with sanitized values and error messages.
+      // Hay errores. Renderiza el formulario nuevamente con valores saneados y mensajes de error.
       res.render("type_form", {
         title: "Actualizar tipo",
         type: type,
@@ -165,7 +165,7 @@ exports.type_update_post = [
       });
       return;
     } else {
-      // Data from form is valid. Update the record.
+      // Los datos del formulario son válidos. Actualizar el registro.
       await Type.findByIdAndUpdate(req.params.id, type);
       res.redirect(type.url);
     }

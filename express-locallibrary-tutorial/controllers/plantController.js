@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
 
 exports.index = asyncHandler(async (req, res, next) => {
-  // Get details of plants, plant instances, greenhouses and type counts (in parallel)
+  // Obtenga detalles de plantas, instancias de plantas, invernaderos y recuentos de tipos (en paralelo)
   const [
     numPlants,
     numPlantInstances,
@@ -33,7 +33,7 @@ exports.index = asyncHandler(async (req, res, next) => {
 });
 
 
-// Display list of all plants.
+// Lista de visualización de todas las plantas.
 exports.plant_list = asyncHandler(async (req, res, next) => {
   const allPlants = await Plant.find({}, "name greenhouse")
     .sort({ name: 1 })
@@ -44,10 +44,10 @@ exports.plant_list = asyncHandler(async (req, res, next) => {
 });
 
 
-// Display detail page for a specific plant.
+// Mostrar página de detalles para una planta específica.
 exports.plant_detail = asyncHandler(async (req, res, next) => {
   const id = mongoose.Types.ObjectId(req.params.id);
-  // Get details of plants, plant instances for specific plant
+  // Obtenga detalles de plantas, instancias de plantas para plantas específicas
   const [plant, plantInstances] = await Promise.all([
     Plant.findById(id).populate("greenhouse").populate("type").exec(),
     PlantInstance.find({ plant: id }).exec(),
@@ -68,9 +68,9 @@ exports.plant_detail = asyncHandler(async (req, res, next) => {
 });
 
 
-// Display plant create form on GET.
+// Mostrar la creación de planta en formulario en Get.
 exports.plant_create_get = asyncHandler(async (req, res, next) => {
-  // Get all greenhouses and types, which we can use for adding to our plant.
+  // Obtenga todos los invernaderos y tipos, que podemos usar para agregar a nuestra planta.
   const [allGreenhouses, allTypes] = await Promise.all([
     Greenhouse.find().exec(),
     Type.find().exec(),
@@ -84,9 +84,9 @@ exports.plant_create_get = asyncHandler(async (req, res, next) => {
 });
 
 
-// Handle plant create on POST.
+// Manejar la creación de la planta en el post.
 exports.plant_create_post = [
-  // Convert the type to an array.
+  // Convierta el tipo en una matriz.
   (req, res, next) => {
     if (!(req.body.type instanceof Array)) {
       if (typeof req.body.type === "undefined") req.body.type = [];
@@ -95,7 +95,7 @@ exports.plant_create_post = [
     next();
   },
 
-  // Validate and sanitize fields.
+  // Validar y sanear campos.
   body("name", "Name must not be empty.")
     .trim()
     .isLength({ min: 1 })
@@ -109,13 +109,13 @@ exports.plant_create_post = [
     .isLength({ min: 1 })
     .escape(),
   body("type.*").escape(),
-  // Process request after validation and sanitization.
+  // Solicitud de proceso después de la validación y saneamiento.
 
   asyncHandler(async (req, res, next) => {
-    // Extract the validation errors from a request.
+    // Extraiga los errores de validación de una solicitud.
     const errors = validationResult(req);
 
-    // Create a Plant object with escaped and trimmed data.
+    // Cree un objeto Planta con datos escapados y recortados.
     const plant = new Plant({
       name: req.body.name,
       greenhouse: req.body.greenhouse,
@@ -124,15 +124,15 @@ exports.plant_create_post = [
     });
 
     if (!errors.isEmpty()) {
-      // There are errors. Render form again with sanitized values/error messages.
+      // Hay errores. Renderice el formulario nuevamente con valores saneados/mensajes de error.
 
-      // Get all greenhouses and types for form.
+      // Obtenga todos los invernaderos y tipos para el formulario.
       const [allGreenhouses, allTypes] = await Promise.all([
         Greenhouse.find().exec(),
         Type.find().exec(),
       ]);
 
-      // Mark our selected types as checked.
+      // Marque nuestros tipos seleccionados como se verifica.
       for (const type of allTypes) {
         if (plant.type.indexOf(type._id) > -1) {
           type.checked = "true";
@@ -146,17 +146,17 @@ exports.plant_create_post = [
         errors: errors.array(),
       });
     } else {
-      // Data from form is valid. Save plant.
+      // Los datos del formulario son válidos. Guardar planta.
       await plant.save();
       res.redirect(plant.url);
     }
   }),
 ];
 
-// Display plant delete form on GET.
+// Mostrar forma de eliminación de planta en Get.
 exports.plant_delete_get = asyncHandler(async (req, res, next) => {
   const id = mongoose.Types.ObjectId(req.params.id);
-  // Get details of plant and all their instances (in parallel)
+  // Obtenga detalles de la planta y todas sus instancias (en paralelo)
   const [plant, allInstancesByPlant] = await Promise.all([
     Plant.findById(id).exec(),
     PlantInstance.find({ plant: id }, "imprint status").exec(),
@@ -174,18 +174,17 @@ exports.plant_delete_get = asyncHandler(async (req, res, next) => {
   });
 });
 
-
-// Handle Greenhouse delete on POST.
+// Manejar el invernadero. Eliminar en el Post.
 exports.plant_delete_post = asyncHandler(async (req, res, next) => {
   const id = mongoose.Types.ObjectId(req.params.id);
-  // Get details of greenhouse and all their plants (in parallel)
+  // Obtenga detalles del invernadero y todas sus plantas (en paralelo)
   const [plant, allInstancesByPlant] = await Promise.all([
     Plant.findById(id).exec(),
     PlantInstance.find({ plant: id }, "imprint status").exec(),
   ]);
 
   if (allInstancesByPlant.length > 0) {
-    // Greenhouse has plants. Render in same way as for GET route.
+    // El invernadero tiene plantas. Renderizar de la misma manera que para obtener la ruta.
     res.render("plant_delete", {
       title: "Borrar planta",
       plant: plant,
@@ -193,15 +192,15 @@ exports.plant_delete_post = asyncHandler(async (req, res, next) => {
     });
     return;
   } else {
-    // Greenhouse has no plants. Delete object and redirect to the list of greenhouses.
+    // El invernadero no tiene plantas. Elimine el objeto y redirige a la lista de invernaderos.
     await Plant.findByIdAndRemove(req.body.plantid);
     res.redirect("/catalog/plants");
   }
 });
 
-// Display plant update form on GET.
+// Mostrar formulario de actualización de la planta en Get.
 exports.plant_update_get = asyncHandler(async (req, res, next) => {
-  // Get plant, greenhouses and types for form.
+  // Obtenga planta, invernaderos y tipos para el formulario.
   const [plant, allGreenhouses, allTypes] = await Promise.all([
     Plant.findById(req.params.id).populate("greenhouse").populate("type").exec(),
     Greenhouse.find().exec(),
@@ -215,7 +214,7 @@ exports.plant_update_get = asyncHandler(async (req, res, next) => {
     return next(err);
   }
 
-  // Mark our selected types as checked.
+  // Marque nuestros tipos seleccionados como se verifica.
   for (const type of allTypes) {
     for (const plant_g of plant.type) {
       if (type._id.toString() === plant_g._id.toString()) {
@@ -232,9 +231,9 @@ exports.plant_update_get = asyncHandler(async (req, res, next) => {
   });
 });
 
-// Handle plant update on POST.
+// Maneje la actualización de la planta en la publicación.
 exports.plant_update_post = [
-  // Convert the type to an array.
+  // Convierta el tipo en una matriz.
   (req, res, next) => {
     if (!(req.body.type instanceof Array)) {
       if (typeof req.body.type === "undefined") {
@@ -246,7 +245,7 @@ exports.plant_update_post = [
     next();
   },
 
-  // Validate and sanitize fields.
+  // Validar y sanear campos.
   body("name", "Name must not be empty.")
     .trim()
     .isLength({ min: 1 })
@@ -261,30 +260,30 @@ exports.plant_update_post = [
     .escape(),
   body("type.*").escape(),
 
-  // Process request after validation and sanitization.
+  // Solicitud de proceso después de la validación y saneamiento.
   asyncHandler(async (req, res, next) => {
-    // Extract the validation errors from a request.
+    // Extraer los errores de validación de una solicitud.
     const errors = validationResult(req);
 
-    // Create a Plant object with escaped/trimmed data and old id.
+    // Cree un objeto Planta con datos escapados/recortados e ID antigua.
     const plant = new Plant({
       name: req.body.name,
       greenhouse: req.body.greenhouse,
       price: req.body.price,
       type: typeof req.body.type === "undefined" ? [] : req.body.type,
-      _id: req.params.id, // This is required, or a new ID will be assigned!
+      _id: req.params.id, // Requerido o se asignará una nueva identificación.
     });
 
     if (!errors.isEmpty()) {
-      // There are errors. Render form again with sanitized values/error messages.
+      // Hay errores. Renderice el formulario nuevamente con valores saneados/mensajes de error.
 
-      // Get all greenhouses and types for form
+      // Obtenga todos los invernaderos y tipos para su forma.
       const [allGreenhouses, allTypes] = await Promise.all([
         Greenhouse.find().exec(),
         Type.find().exec(),
       ]);
 
-      // Mark our selected types as checked.
+      // Marcar los tipos seleccionados como se verifica.
       for (const type of allTypes) {
         if (plant.type.indexOf(types._id) > -1) {
           type.checked = "true";
@@ -299,9 +298,9 @@ exports.plant_update_post = [
       });
       return;
     } else {
-      // Data from form is valid. Update the record.
+      // Los datos del formulario son válidos. Actualizar el registro.
       const theplant = await Plant.findByIdAndUpdate(req.params.id, plant, {});
-      // Redirect to plant detail page.
+      // Redirigir a la página de detalles de la planta.
       res.redirect(theplant.url);
     }
   }),

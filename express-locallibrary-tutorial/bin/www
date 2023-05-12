@@ -9,20 +9,20 @@ var debug = require('debug')('express-locallibrary-tutorial:server');
 var http = require('http');
 
 /**
- * Get port from environment and store in Express.
+ * Obtener el puerto del entorno y almacénelo en Express.
  */
 
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
- * Create HTTP server.
+ * Crear HTTP server.
  */
 
 var server = http.createServer(app);
 
 /**
- * Listen on provided port, on all network interfaces.
+ * Escuche en el puerto provisto, en todas las interfaces de red.
  */
 
 server.listen(port);
@@ -30,7 +30,7 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 /**
- * Normalize a port into a number, string, or false.
+ * Normaliza un puerto en un número, cadena o falso.
  */
 
 function normalizePort(val) {
@@ -50,7 +50,7 @@ function normalizePort(val) {
 }
 
 /**
- * Event listener for HTTP server "error" event.
+ * Event listener para HTTP server "error" event.
  */
 
 function onError(error) {
@@ -62,7 +62,7 @@ function onError(error) {
     ? 'Pipe ' + port
     : 'Port ' + port;
 
-  // handle specific listen errors with friendly messages
+  // manejar errores de escucha específicos con mensajes
   switch (error.code) {
     case 'EACCES':
       console.error(bind + ' requires elevated privileges');
@@ -78,7 +78,7 @@ function onError(error) {
 }
 
 /**
- * Event listener for HTTP server "listening" event.
+ * Event listener para HTTP server "listening" event.
  */
 
 function onListening() {

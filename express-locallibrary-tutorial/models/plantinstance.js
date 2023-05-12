@@ -18,6 +18,6 @@ PlantInstanceSchema.virtual("url").get(function () {
   return `/catalog/plantinstance/${this._id}`;
 });
 
-// Export model
+// Exportar modelo
 const PlantInstance = mongoose.model("PlantInstance", PlantInstanceSchema);
 module.exports = { PlantInstance };
