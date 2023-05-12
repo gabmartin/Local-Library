@@ -19,7 +19,7 @@ exports.type_detail = asyncHandler(async (req, res, next) => {
   // Get details of type and all associated plants (in parallel)
   const [type, plantsInType] = await Promise.all([
     Type.findById(id).exec(),
-    Plant.find({ type: id }, "name price").populate("plant").exec(),
+    Plant.find({ type: id }, "name price").exec(),
   ]);
   if (type === null) {
     // No results.
